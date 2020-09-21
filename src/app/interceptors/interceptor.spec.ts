@@ -1,11 +1,11 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, async, fakeAsync } from '@angular/core/testing';
 import {
   HttpClientTestingModule,
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { DataService } from '../services/data.service';
 import { AuthHttpInterceptor } from './interceptor';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 
 describe(`AuthHttpInterceptor`, () => {
   let service: DataService;
@@ -24,17 +24,17 @@ describe(`AuthHttpInterceptor`, () => {
       ],
     });
 
-    service = TestBed.get(DataService);
-    httpMock = TestBed.get(HttpTestingController);
+    service = TestBed.inject(DataService);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
-  it('should add an Authorization header', () => {
+  it('should add an Authorization header', fakeAsync(() => {
     service.getPosts().subscribe(response => {
       expect(response).toBeTruthy();
     });
-
     const httpRequest = httpMock.expectOne(`${service.ROOT_URL}/posts`);
+
     expect(httpRequest.request.headers.has('Authorization')).toEqual(true);
-  });
+  }));
 
 });
